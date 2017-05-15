@@ -1,18 +1,5 @@
 package net.lightbody.bmp.util;
 
-import com.google.common.net.HostAndPort;
-import com.google.common.net.MediaType;
-
-import cn.darkal.networkdiagnosis.Utils.DatatypeConverter;
-import io.netty.buffer.ByteBuf;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpResponse;
-import net.lightbody.bmp.exception.DecompressionException;
-import net.lightbody.bmp.exception.UnsupportedCharsetException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,6 +9,27 @@ import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.net.HostAndPort;
+import com.google.common.net.MediaType;
+
+import android.support.annotation.NonNull;
+import android.util.Log;
+import cn.darkal.networkdiagnosis.Utils.DatatypeConverter;
+import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponse;
+import net.lightbody.bmp.core.har.HarCookie;
+import net.lightbody.bmp.core.har.HarEntry;
+import net.lightbody.bmp.core.har.HarNameValuePair;
+import net.lightbody.bmp.core.har.HarRequest;
+import net.lightbody.bmp.core.har.HarResponse;
+import net.lightbody.bmp.exception.DecompressionException;
+import net.lightbody.bmp.exception.UnsupportedCharsetException;
 
 /**
  * Utility class with static methods for processing HTTP requests and responses.
@@ -42,10 +50,13 @@ public class BrowserMobHttpUtil {
     public static final String UNKNOWN_CONTENT_TYPE = "application/octet-stream";
 
     /**
-     * The default charset when the Content-Type header does not specify a charset. From the HTTP 1.1 spec section 3.7.1:
+     * The default charset when the Content-Type header does not specify a charset. From the HTTP 1.1 spec section 3
+     * .7.1:
      * <pre>
-     *     When no explicit charset parameter is provided by the sender, media subtypes of the "text" type are defined to have a default
-     *     charset value of "ISO-8859-1" when received via HTTP. Data in character sets other than "ISO-8859-1" or its subsets MUST be
+     *     When no explicit charset parameter is provided by the sender, media subtypes of the "text" type are
+     *     defined to have a default
+     *     charset value of "ISO-8859-1" when received via HTTP. Data in character sets other than "ISO-8859-1" or
+     *     its subsets MUST be
      *     labeled with an appropriate charset value.
      * </pre>
      */
@@ -60,6 +71,7 @@ public class BrowserMobHttpUtil {
      * Returns the size of the headers, including the 2 CRLFs at the end of the header block.
      *
      * @param headers headers to size
+     *
      * @return length of the headers, in bytes
      */
     public static long getHeaderSize(HttpHeaders headers) {
@@ -75,7 +87,9 @@ public class BrowserMobHttpUtil {
      * Decompresses the gzipped byte stream.
      *
      * @param fullMessage gzipped byte stream to decomress
+     *
      * @return decompressed bytes
+     *
      * @throws DecompressionException thrown if the fullMessage cannot be read or decompressed for any reason
      */
     public static byte[] decompressContents(byte[] fullMessage) throws DecompressionException {
@@ -108,7 +122,8 @@ public class BrowserMobHttpUtil {
     }
 
     /**
-     * Returns true if the content type string indicates textual content. Currently these are any Content-Types that start with one of the
+     * Returns true if the content type string indicates textual content. Currently these are any Content-Types that
+     * start with one of the
      * following:
      * <pre>
      *     text/
@@ -120,16 +135,17 @@ public class BrowserMobHttpUtil {
      * </pre>
      *
      * @param contentType contentType string to parse
+     *
      * @return true if the content type is textual
      */
     public static boolean hasTextualContent(String contentType) {
         return contentType != null &&
                 (contentType.startsWith("text/") ||
-                contentType.startsWith("application/x-javascript") ||
-                contentType.startsWith("application/javascript")  ||
-                contentType.startsWith("application/json")  ||
-                contentType.startsWith("application/xml")  ||
-                contentType.startsWith("application/xhtml+xml")
+                         contentType.startsWith("application/x-javascript") ||
+                         contentType.startsWith("application/javascript") ||
+                         contentType.startsWith("application/json") ||
+                         contentType.startsWith("application/xml") ||
+                         contentType.startsWith("application/xhtml+xml")
                 );
     }
 
@@ -137,6 +153,7 @@ public class BrowserMobHttpUtil {
      * Extracts all readable bytes from the ByteBuf as a byte array.
      *
      * @param content ByteBuf to read
+     *
      * @return byte array containing the readable bytes from the ByteBuf
      */
     public static byte[] extractReadableBytes(ByteBuf content) {
@@ -154,7 +171,9 @@ public class BrowserMobHttpUtil {
      *
      * @param content bytes to convert to a String
      * @param charset the character set of the content
+     *
      * @return String containing the converted content
+     *
      * @throws IllegalArgumentException if charset is null
      */
     public static String getContentAsString(byte[] content, Charset charset) {
@@ -166,12 +185,17 @@ public class BrowserMobHttpUtil {
     }
 
     /**
-     * Reads the charset directly from the Content-Type header string. If the Content-Type header does not contain a charset,
+     * Reads the charset directly from the Content-Type header string. If the Content-Type header does not contain a
+     * charset,
      * is malformed or unparsable, or if the header is null or empty, this method returns null.
      *
      * @param contentTypeHeader the Content-Type header string; can be null or empty
-     * @return the character set indicated in the contentTypeHeader, or null if the charset is not present or is not parsable
-     * @throws UnsupportedCharsetException if there is a charset specified in the content-type header, but it is not supported on this platform
+     *
+     * @return the character set indicated in the contentTypeHeader, or null if the charset is not present or is not
+     * parsable
+     *
+     * @throws UnsupportedCharsetException if there is a charset specified in the content-type header, but it is not
+     *                                     supported on this platform
      */
     public static Charset readCharsetInContentTypeHeader(String contentTypeHeader) throws UnsupportedCharsetException {
         if (contentTypeHeader == null || contentTypeHeader.isEmpty()) {
@@ -180,9 +204,10 @@ public class BrowserMobHttpUtil {
 
         MediaType mediaType;
         try {
-             mediaType = MediaType.parse(contentTypeHeader);
+            mediaType = MediaType.parse(contentTypeHeader);
         } catch (IllegalArgumentException e) {
-            log.info("Unable to parse Content-Type header: {}. Content-Type header will be ignored.", contentTypeHeader, e);
+            log.info("Unable to parse Content-Type header: {}. Content-Type header will be ignored.", contentTypeHeader,
+                    e);
             return null;
         }
 
@@ -198,7 +223,9 @@ public class BrowserMobHttpUtil {
      * the scheme, host, or port.
      *
      * @param httpRequest HTTP request
+     *
      * @return the unescaped path + query string from the HTTP request
+     *
      * @throws URISyntaxException if the path could not be parsed (due to invalid characters in the URI, etc.)
      */
     public static String getRawPathAndParamsFromRequest(HttpRequest httpRequest) throws URISyntaxException {
@@ -206,7 +233,8 @@ public class BrowserMobHttpUtil {
         if (HttpUtil.startsWithHttpOrHttps(httpRequest.getUri())) {
             return getRawPathAndParamsFromUri(httpRequest.getUri());
         } else {
-            // to provide consistent validation behavior for URIs that contain a scheme and those that don't, attempt to parse
+            // to provide consistent validation behavior for URIs that contain a scheme and those that don't, attempt
+            // to parse
             // the URI, even though we discard the parsed URI object
             new URI(httpRequest.getUri());
 
@@ -216,11 +244,14 @@ public class BrowserMobHttpUtil {
 
     /**
      * Retrieves the raw (unescaped) path and query parameters from the URI, stripping out the scheme, host, and port.
-     * The path will begin with a leading '/'. For example, 'http://example.com/some/resource?param%20name=param%20value'
+     * The path will begin with a leading '/'. For example, 'http://example
+     * .com/some/resource?param%20name=param%20value'
      * would return '/some/resource?param%20name=param%20value'.
      *
      * @param uriString the URI to parse, containing a scheme, host, port, path, and query parameters
+     *
      * @return the unescaped path and query parameters from the URI
+     *
      * @throws URISyntaxException if the specified URI is invalid or cannot be parsed
      */
     public static String getRawPathAndParamsFromUri(String uriString) throws URISyntaxException {
@@ -239,6 +270,7 @@ public class BrowserMobHttpUtil {
      * Returns true if the specified response is an HTTP redirect response, i.e. a 300, 301, 302, 303, or 307.
      *
      * @param httpResponse HTTP response
+     *
      * @return true if the response is a redirect, otherwise false
      */
     public static boolean isRedirect(HttpResponse httpResponse) {
@@ -259,13 +291,14 @@ public class BrowserMobHttpUtil {
      * Removes a port from a host+port if the string contains the specified port. If the host+port does not contain
      * a port, or contains another port, the string is returned unaltered. For example, if hostWithPort is the
      * string {@code www.website.com:443}, this method will return {@code www.website.com}.
-     *
+     * <p>
      * <b>Note:</b> The hostWithPort string is not a URI and should not contain a scheme or resource. This method does
      * not attempt to validate the specified host; it <i>might</i> throw IllegalArgumentException if there was a problem
      * parsing the hostname, but makes no guarantees. In general, it should be validated externally, if necessary.
      *
      * @param hostWithPort string containing a hostname and optional port
-     * @param portNumber port to remove from the string
+     * @param portNumber   port to remove from the string
+     *
      * @return string with the specified port removed, or the original string if it did not contain the portNumber
      */
     public static String removeMatchingPort(String hostWithPort, int portNumber) {
@@ -284,13 +317,86 @@ public class BrowserMobHttpUtil {
      *
      * @param username username to encode
      * @param password password to encode
+     *
      * @return a base-64 encoded string containing <code>username:password</code>
      */
     public static String base64EncodeBasicCredentials(String username, String password) {
         String credentialsToEncode = username + ':' + password;
-        // using UTF-8, which is the modern de facto standard, and which retains compatibility with US_ASCII for ASCII characters,
+        // using UTF-8, which is the modern de facto standard, and which retains compatibility with US_ASCII for
+        // ASCII characters,
         // as required by RFC 7616, section 3: http://tools.ietf.org/html/rfc7617#section-3
         byte[] credentialsAsUtf8Bytes = credentialsToEncode.getBytes(Charset.forName("UTF-8"));
         return new String(DatatypeConverter.parseBase64Binary(new String(credentialsAsUtf8Bytes)));
+    }
+
+    public static void printEntry(String TAG, @NonNull HarEntry entry) {
+        HarRequest req = entry.getRequest();
+        HarResponse rsp = entry.getResponse();
+        Log.i(TAG, "printentry-------------START----------->" + " ss:" + entry.getPageref());
+        try {
+            Log.i(TAG, "TotalTime:" + entry.getTime() + "ms");
+            if (req != null) {
+                String url = req.getUrl();
+                if (!url.contains("a3.pstatp") && !url.contains("it.snssdk")) {
+                    return;
+                }
+                Log.i(TAG, "Method:" + req.getMethod());
+                Log.i(TAG, "URL:" + req.getUrl());
+                if (req.getQueryString().size() > 0) {
+                    Log.i(TAG, "Request Query:");
+                    for (HarNameValuePair pair : req.getQueryString()) {
+                        Log.i(TAG, pair.getName() + "-->" + pair.getDecodeValue());
+                    }
+                }
+                for (HarNameValuePair pair : req.getHeaders()) {
+                    // 不显示cookie
+                    if (!pair.getName().equals("Cookie")) {
+                        Log.i(TAG, pair.getName() + "-->" + pair.getDecodeValue());
+                    }
+                }
+                if (req.getCookies().size() > 0) {
+                    Log.i(TAG, "Request Cookies:");
+                    for (HarCookie cookie : req.getCookies()) {
+                        Log.i(TAG, cookie.getName() + "-->" + cookie.getDecodeValue());
+                    }
+                }
+                if (req.getPostData() != null) {
+                    Log.i(TAG, "Request Content:");
+                    Log.i(TAG, "PostData -->" + req.getPostData().getText());
+                }
+            }
+            if (rsp != null) {
+                Log.i(TAG, "Status:" + rsp.getStatus() + "");
+                Log.i(TAG, "Size:" + rsp.getBodySize() + "Bytes");
+                //                if (rsp.getHeadersSize() > 0) {
+                //                    for (HarNameValuePair pair : rsp.getHeaders()) {
+                //                        if (!pair.getName().equals("Cookie")) {
+                //                            Log.i(TAG, pair.getName() + "-->" + pair.getDecodeValue());
+                //                        }
+                //                    }
+                //                }
+                //                if (null != rsp.getCookies() && rsp.getCookies().size() > 0) {
+                //                    Log.i(TAG, "Response Cookies:");
+                //                    for (HarCookie cookie : rsp.getCookies()) {
+                //                        Log.i(TAG, cookie.getName() + "-->" + cookie.getDecodeValue());
+                //                    }
+                //                }
+                //                if ((rsp.getRedirectURL() != null && rsp.getRedirectURL().length() > 0) ||
+                //                        (rsp.getContent().getText() != null && rsp.getContent().getText().length()
+                // > 0)) {
+                //                    Log.i(TAG, "Response Content:");
+                //                }
+                //                if (rsp.getRedirectURL() != null && rsp.getRedirectURL().length() > 0) {
+                //                    Log.i(TAG, "RedirectURL:" + rsp.getRedirectURL());
+                //                }
+                if (null != rsp.getContent() && rsp.getContent().getText() != null && rsp.getContent().getText().length
+                        () > 0) {
+                    Log.i(TAG, "Content:" + rsp.getContent().getText());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Log.i(TAG, "printentry--------------END---------->");
     }
 }

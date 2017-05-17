@@ -23,9 +23,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
-import net.lightbody.bmp.core.har.HarCookie;
 import net.lightbody.bmp.core.har.HarEntry;
-import net.lightbody.bmp.core.har.HarNameValuePair;
 import net.lightbody.bmp.core.har.HarRequest;
 import net.lightbody.bmp.core.har.HarResponse;
 import net.lightbody.bmp.exception.DecompressionException;
@@ -337,33 +335,33 @@ public class BrowserMobHttpUtil {
             Log.i(TAG, "TotalTime:" + entry.getTime() + "ms");
             if (req != null) {
                 String url = req.getUrl();
-                if (!url.contains("a3.pstatp") && !url.contains("it.snssdk")) {
-                    return;
-                }
+                //                if (!url.contains("a3.pstatp") && !url.contains("it.snssdk")) {
+                //                    return;
+                //                }
                 Log.i(TAG, "Method:" + req.getMethod());
                 Log.i(TAG, "URL:" + req.getUrl());
-                if (req.getQueryString().size() > 0) {
-                    Log.i(TAG, "Request Query:");
-                    for (HarNameValuePair pair : req.getQueryString()) {
-                        Log.i(TAG, pair.getName() + "-->" + pair.getDecodeValue());
-                    }
-                }
-                for (HarNameValuePair pair : req.getHeaders()) {
-                    // 不显示cookie
-                    if (!pair.getName().equals("Cookie")) {
-                        Log.i(TAG, pair.getName() + "-->" + pair.getDecodeValue());
-                    }
-                }
-                if (req.getCookies().size() > 0) {
-                    Log.i(TAG, "Request Cookies:");
-                    for (HarCookie cookie : req.getCookies()) {
-                        Log.i(TAG, cookie.getName() + "-->" + cookie.getDecodeValue());
-                    }
-                }
-                if (req.getPostData() != null) {
-                    Log.i(TAG, "Request Content:");
-                    Log.i(TAG, "PostData -->" + req.getPostData().getText());
-                }
+                //                if (req.getQueryString().size() > 0) {
+                //                    Log.i(TAG, "Request Query:");
+                //                    for (HarNameValuePair pair : req.getQueryString()) {
+                //                        Log.i(TAG, pair.getName() + "-->" + pair.getDecodeValue());
+                //                    }
+                //                }
+                //                for (HarNameValuePair pair : req.getHeaders()) {
+                //                    // 不显示cookie
+                //                    if (!pair.getName().equals("Cookie")) {
+                //                        Log.i(TAG, pair.getName() + "-->" + pair.getDecodeValue());
+                //                    }
+                //                }
+                //                if (req.getCookies().size() > 0) {
+                //                    Log.i(TAG, "Request Cookies:");
+                //                    for (HarCookie cookie : req.getCookies()) {
+                //                        Log.i(TAG, cookie.getName() + "-->" + cookie.getDecodeValue());
+                //                    }
+                //                }
+                //                if (req.getPostData() != null) {
+                //                    Log.i(TAG, "Request Content:");
+                //                    Log.i(TAG, "PostData -->" + req.getPostData().getText());
+                //                }
             }
             if (rsp != null) {
                 Log.i(TAG, "Status:" + rsp.getStatus() + "");

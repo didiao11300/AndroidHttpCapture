@@ -1,5 +1,17 @@
 package net.lightbody.bmp.filters;
 
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.littleshoot.proxy.HttpFilters;
+import org.littleshoot.proxy.HttpFiltersAdapter;
+import org.littleshoot.proxy.HttpFiltersSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import android.util.Log;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -8,22 +20,13 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import net.lightbody.bmp.BrowserMobProxyServer;
-import org.littleshoot.proxy.HttpFilters;
-import org.littleshoot.proxy.HttpFiltersAdapter;
-import org.littleshoot.proxy.HttpFiltersSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * The filter "driver" that delegates to all chained filters specified by the proxy server.
  */
 public class BrowserMobHttpFilterChain extends HttpFiltersAdapter {
     private static final Logger log = LoggerFactory.getLogger(BrowserMobHttpFilterChain.class);
+    private static final String TAG = BrowserMobHttpFilterChain.class.getSimpleName();
 
     private final BrowserMobProxyServer proxyServer;
 

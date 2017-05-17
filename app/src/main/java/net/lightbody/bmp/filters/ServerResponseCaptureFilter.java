@@ -1,5 +1,13 @@
 package net.lightbody.bmp.filters;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import org.littleshoot.proxy.HttpFiltersAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import android.util.Log;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpContent;
@@ -9,23 +17,20 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.LastHttpContent;
 import net.lightbody.bmp.util.BrowserMobHttpUtil;
-import org.littleshoot.proxy.HttpFiltersAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 /**
- * This filter captures responses from the server (headers and content). The filter can also decompress contents if desired.
+ * This filter captures responses from the server (headers and content). The filter can also decompress contents if
+ * desired.
  * <p/>
- * The filter can be used in one of three ways: (1) directly, by adding the filter to the filter chain; (2) by subclassing
+ * The filter can be used in one of three ways: (1) directly, by adding the filter to the filter chain; (2) by
+ * subclassing
  * the filter and overriding its filter methods; or (3) by invoking the filter directly from within another filter (see
  * {@link net.lightbody.bmp.filters.HarCaptureFilter} for an example of the latter).
  */
 public class ServerResponseCaptureFilter extends HttpFiltersAdapter {
     private static final Logger log = LoggerFactory.getLogger(ServerResponseCaptureFilter.class);
 
+    private static final String TAG = ServerResponseCaptureFilter.class.getSimpleName();
     /**
      * Populated by serverToProxyResponse() when processing the HttpResponse object
      */
@@ -74,7 +79,8 @@ public class ServerResponseCaptureFilter extends HttpFiltersAdapter {
         this.decompressEncodedContent = decompressEncodedContent;
     }
 
-    public ServerResponseCaptureFilter(HttpRequest originalRequest, ChannelHandlerContext ctx, boolean decompressEncodedContent) {
+    public ServerResponseCaptureFilter(HttpRequest originalRequest, ChannelHandlerContext ctx,
+                                       boolean decompressEncodedContent) {
         super(originalRequest, ctx);
 
         this.decompressEncodedContent = decompressEncodedContent;
@@ -82,6 +88,7 @@ public class ServerResponseCaptureFilter extends HttpFiltersAdapter {
 
     @Override
     public HttpObject serverToProxyResponse(HttpObject httpObject) {
+        Log.i(TAG, "serverToProxyResponse()...");
         if (httpObject instanceof HttpResponse) {
             httpResponse = (HttpResponse) httpObject;
             captureContentEncoding(httpResponse);
@@ -100,6 +107,7 @@ public class ServerResponseCaptureFilter extends HttpFiltersAdapter {
             }
         }
 
+        //        printEntry(TAG,);
         return super.serverToProxyResponse(httpObject);
     }
 
@@ -116,7 +124,7 @@ public class ServerResponseCaptureFilter extends HttpFiltersAdapter {
 
             if (decompressEncodedContent) {
                 decompressContents();
-            }  else {
+            } else {
                 // will not decompress response
             }
         } else {
@@ -131,7 +139,8 @@ public class ServerResponseCaptureFilter extends HttpFiltersAdapter {
                 fullResponseContents = BrowserMobHttpUtil.decompressContents(getRawResponseContents());
                 decompressionSuccessful = true;
             } catch (RuntimeException e) {
-                log.warn("Failed to decompress response with encoding type " + contentEncoding + " when decoding request from " + originalRequest.getUri(), e);
+                log.warn("Failed to decompress response with encoding type " + contentEncoding
+                        + " when decoding request from " + originalRequest.getUri(), e);
             }
         } else {
             log.warn("Cannot decode unsupported content encoding type {}", contentEncoding);
@@ -145,7 +154,8 @@ public class ServerResponseCaptureFilter extends HttpFiltersAdapter {
     protected void captureTrailingHeaders(LastHttpContent lastContent) {
         trailingHeaders = lastContent.trailingHeaders();
 
-        // technically, the Content-Encoding header can be in a trailing header, although this is excruciatingly uncommon
+        // technically, the Content-Encoding header can be in a trailing header, although this is excruciatingly
+        // uncommon
         if (trailingHeaders != null) {
             String trailingContentEncoding = trailingHeaders.get(HttpHeaders.Names.CONTENT_ENCODING);
             if (trailingContentEncoding != null) {
@@ -164,6 +174,7 @@ public class ServerResponseCaptureFilter extends HttpFiltersAdapter {
         } catch (IOException e) {
             // can't happen
         }
+        Log.i(TAG, "storeResponseContent()..." + new String(content));
     }
 
     public HttpResponse getHttpResponse() {
@@ -171,7 +182,8 @@ public class ServerResponseCaptureFilter extends HttpFiltersAdapter {
     }
 
     /**
-     * Returns the contents of the entire response. If the contents were compressed, <code>decompressEncodedContent</code> is true, and
+     * Returns the contents of the entire response. If the contents were compressed,
+     * <code>decompressEncodedContent</code> is true, and
      * decompression was successful, this method returns the decompressed contents.
      *
      * @return entire response contents, decompressed if possible

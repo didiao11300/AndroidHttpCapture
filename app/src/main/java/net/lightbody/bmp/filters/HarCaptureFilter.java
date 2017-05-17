@@ -18,8 +18,11 @@ import org.littleshoot.proxy.impl.ProxyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.ImmutableList;
 
+import android.util.Log;
+import capture.VideoInfoRsp;
 import cn.darkal.networkdiagnosis.Utils.DatatypeConverter;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -270,6 +273,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         // if a Ser
         //verResponseCaptureFilter is configured, delegate to it to collect the server's response. if it is not
         // configured, we still need to capture basic information (timings, HTTP status, etc.), just not content.
+        Log.i(TAG, TAG + "#serverToProxyResponse()...");
         if (responseCaptureFilter != null) {
             responseCaptureFilter.serverToProxyResponse(httpObject);
         }
@@ -293,7 +297,22 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
             }
 
             harEntry.getResponse().setBodySize(responseBodySize.get());
-            printEntry(TAG+"RSPC", harEntry);
+        }
+
+        //tory add 解析代码
+        if (null != harEntry && null != harEntry.getRequest()) {
+            String reqUrl = harEntry.getRequest().getUrl();
+            if (reqUrl.contains("a3.pstatp.com")) {
+                printEntry(TAG + "RSPC", harEntry);
+                HarResponse rsp = harEntry.getResponse();
+                if (null != rsp.getContent() && rsp.getContent().getText() != null
+                        && rsp.getContent().getText().length() > 0) {
+                    VideoInfoRsp video = JSON.parseObject(rsp.getContent().getText(), VideoInfoRsp.class);
+
+                }
+            } else if (reqUrl.contains("it.snssdk")) {
+                printEntry(TAG, harEntry);
+            }
         }
 
         return super.serverToProxyResponse(httpObject);
@@ -569,7 +588,6 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         if (BrowserMobHttpUtil.isRedirect(httpResponse)) {
             captureRedirectUrl(httpResponse);
         }
-        printEntry(TAG + " RSP", harEntry);
     }
 
     protected void captureResponseMimeType(HttpResponse httpResponse) {

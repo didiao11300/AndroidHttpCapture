@@ -5,6 +5,8 @@ package capture;
 
 import java.util.List;
 
+import com.alibaba.fastjson.JSON;
+
 /**
  * Created by youfeimacpro on 2017/5/19.
  * /api/news/feed/v53/
@@ -38,5 +40,10 @@ public class VideoItemListRsp {
     public static class DataBean {
         public String content;
         public String code;
+    }
+
+    public String toJsonString() {
+        String s = JSON.toJSONString(this);
+        return s;
     }
 }

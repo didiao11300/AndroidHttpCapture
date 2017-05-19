@@ -174,7 +174,7 @@ public class ServerResponseCaptureFilter extends HttpFiltersAdapter {
         } catch (IOException e) {
             // can't happen
         }
-        Log.i(TAG, "storeResponseContent()..." + new String(content));
+//        Log.i(TAG, "storeResponseContent()..." + new String(content));
     }
 
     public HttpResponse getHttpResponse() {

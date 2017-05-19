@@ -41,6 +41,7 @@ android {
         }
         debug {
             signingConfig signingConfigs.NetworkDiagnosis
+            debuggable true
         }
     }
     packagingOptions {

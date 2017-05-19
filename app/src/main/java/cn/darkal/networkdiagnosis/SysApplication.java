@@ -1,29 +1,28 @@
 package cn.darkal.networkdiagnosis;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Environment;
-import android.preference.PreferenceManager;
-import android.support.multidex.MultiDexApplication;
-import android.util.Log;
-
-import com.tencent.bugly.Bugly;
-import com.tencent.bugly.crashreport.CrashReport;
-
-import net.gotev.uploadservice.UploadService;
-import net.lightbody.bmp.BrowserMobProxy;
-import net.lightbody.bmp.BrowserMobProxyServer;
-import net.lightbody.bmp.proxy.CaptureType;
-import net.lightbody.bmp.proxy.dns.AdvancedHostResolver;
-
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
+
+import org.apache.commons.io.FileUtils;
+
+import com.tencent.bugly.Bugly;
+import com.tencent.bugly.crashreport.CrashReport;
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Environment;
+import android.preference.PreferenceManager;
+import android.support.multidex.MultiDexApplication;
+import android.util.Log;
+import net.gotev.uploadservice.UploadService;
+import net.lightbody.bmp.BrowserMobProxy;
+import net.lightbody.bmp.BrowserMobProxyServer;
+import net.lightbody.bmp.proxy.CaptureType;
+import net.lightbody.bmp.proxy.dns.AdvancedHostResolver;
 
 /**
  * Created by xuzhou on 2016/8/10.
@@ -97,7 +96,7 @@ public class SysApplication extends MultiDexApplication {
 
         proxy.enableHarCaptureTypes(CaptureType.REQUEST_HEADERS, CaptureType.REQUEST_COOKIES,
                 CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_HEADERS, CaptureType.REQUEST_COOKIES,
-                CaptureType.RESPONSE_CONTENT);
+                CaptureType.RESPONSE_CONTENT,CaptureType.REQUEST_BINARY_CONTENT,CaptureType.RESPONSE_BINARY_CONTENT);
 
         String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
                 .format(new Date(System.currentTimeMillis()));

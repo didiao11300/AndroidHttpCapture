@@ -273,7 +273,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         // if a Ser
         //verResponseCaptureFilter is configured, delegate to it to collect the server's response. if it is not
         // configured, we still need to capture basic information (timings, HTTP status, etc.), just not content.
-        Log.i(TAG, TAG + "#serverToProxyResponse()...");
+        Log.i(TAG, TAG + "#serverToProxyResponse()..."+httpObject.getClass().getSimpleName());
         if (responseCaptureFilter != null) {
             responseCaptureFilter.serverToProxyResponse(httpObject);
         }
@@ -310,7 +310,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
                     VideoInfoRsp video = JSON.parseObject(rsp.getContent().getText(), VideoInfoRsp.class);
 
                 }
-            } else if (reqUrl.contains("it.snssdk")) {
+            } else if (reqUrl.contains("snssdk")) {
                 printEntry(TAG, harEntry);
             }
         }

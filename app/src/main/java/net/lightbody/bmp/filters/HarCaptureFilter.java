@@ -50,6 +50,7 @@ import net.lightbody.bmp.filters.support.HttpConnectTiming;
 import net.lightbody.bmp.filters.util.HarCaptureUtil;
 import net.lightbody.bmp.proxy.CaptureType;
 import net.lightbody.bmp.util.BrowserMobHttpUtil;
+import netpackage.apis.LoginApi;
 
 public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
     private static final Logger log = LoggerFactory.getLogger(HarCaptureFilter.class);
@@ -308,7 +309,8 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
                 if (null != rsp.getContent() && rsp.getContent().getText() != null
                         && rsp.getContent().getText().length() > 0) {
                     VideoInfoRsp video = JSON.parseObject(rsp.getContent().getText(), VideoInfoRsp.class);
-
+                    Log.i(TAG,"video:"+video.toString());
+                    LoginApi.requestToutiao();
                 }
             } else if (reqUrl.contains("snssdk")) {
                 printEntry(TAG, harEntry);

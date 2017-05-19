@@ -5,6 +5,8 @@ package capture;
 
 import java.util.List;
 
+import com.alibaba.fastjson.JSON;
+
 /**
  * Created by youfeimacpro on 2017/5/15.
  */
@@ -55,5 +57,9 @@ public class VideoInfoRsp {
                 public List<?> authors;
             }
         }
+    }
+    public String toJsonString(){
+        String s = JSON.toJSONString(this);
+        return s;
     }
 }

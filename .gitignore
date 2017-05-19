@@ -35,6 +35,8 @@ captures/
 *.iml  
   
 # Keystore files  
-*.jks
-
-.idea*
+*.jks  
+  
+.idea/  
+.gradle/  
+.git/  

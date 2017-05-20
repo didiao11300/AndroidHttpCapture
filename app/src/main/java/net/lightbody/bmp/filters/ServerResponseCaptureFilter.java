@@ -88,7 +88,7 @@ public class ServerResponseCaptureFilter extends HttpFiltersAdapter {
 
     @Override
     public HttpObject serverToProxyResponse(HttpObject httpObject) {
-        Log.i(TAG, "serverToProxyResponse()...");
+//        Log.i(TAG, "serverToProxyResponse()...");
         if (httpObject instanceof HttpResponse) {
             httpResponse = (HttpResponse) httpObject;
             captureContentEncoding(httpResponse);

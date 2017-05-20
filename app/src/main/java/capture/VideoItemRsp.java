@@ -13,7 +13,13 @@ import com.google.gson.annotations.SerializedName;
 
 public class VideoItemRsp {
     public LogPbBean log_pb;
+    /**
+     * 视频文章已读数量，没看完
+     */
     public int read_count;
+    /**
+     * 视频ID 全网唯一
+     */
     public String video_id;
     public String media_name;
     public int ban_comment;
@@ -26,6 +32,9 @@ public class VideoItemRsp {
     public ForwardInfoBean forward_info;
     public int has_m3u8_video;
     public String keywords;
+    /**
+     * 视频持续时间秒
+     */
     public int video_duration;
     public boolean show_portrait_article;
     public int user_verified;
@@ -39,13 +48,28 @@ public class VideoItemRsp {
     public int source_icon_style;
     public int tip;
     public int hot;
+    /**
+     * 视频分享链接
+     */
     public String share_url;
     public int has_mp4_video;
     public String source;
+    /**
+     * 视频评论量
+     */
     public int comment_count;
+    /**
+     * 视频播放的网络地址,注意:这里不是下载地址
+     */
     public String article_url;
+    /**
+     * 视频/文章被分享次数，也可以用来做大数据
+     */
     public int share_count;
     public String rid;
+    /**
+     * 视频/文章发布时间
+     */
     public int publish_time;
     public int cell_layout_style;
     public long tag_id;
@@ -56,13 +80,31 @@ public class VideoItemRsp {
     public long item_id;
     public boolean is_subject;
     public boolean show_portrait;
+    /**
+     * 视频??是不是重复观看次数
+     */
     public int repin_count;
     public int cell_flag;
+    /**
+     * 发布的用户信息
+     */
     public UserInfoBean user_info;
     public String source_open_url;
+    /**
+     * 视频等级，待分析？
+     */
     public int level;
+    /**
+     * 视频收藏数量？？
+     */
     public int like_count;
+    /**
+     * 视频订阅数量？？
+     */
     public int digg_count;
+    /**
+     * 热度持续时间？？
+     */
     public int behot_time;
     public long cursor;
     public String url;
@@ -74,6 +116,9 @@ public class VideoItemRsp {
     public long group_id;
     public MiddleImageBean middle_image;
     public List<?> image_list;
+    /**
+     * 视频滤波器,重要:系统关于视频的评价,比如重复推荐，视频质量差;
+     */
     public List<FilterWordsBean> filter_words;
     public List<String> search_labels;
     public List<ActionListBean> action_list;
@@ -93,6 +138,9 @@ public class VideoItemRsp {
         public String video_third_monitor_url;
         public String video_id;
         public int video_watching_count;
+        /**
+         * 视频观看量
+         */
         public int video_watch_count;
         public List<?> video_url;
 
@@ -115,13 +163,25 @@ public class VideoItemRsp {
 
     public static class UserInfoBean {
         public String verified_content;
+        /**
+         * 用户头像
+         */
         public String avatar_url;
+        /**
+         * 用户id
+         */
         public long user_id;
+        /**
+         * 用户名称
+         */
         public String name;
         public int follower_count;
         public boolean follow;
         public String user_auth_info;
         public boolean user_verified;
+        /**
+         * 用户签名
+         */
         public String description;
     }
 

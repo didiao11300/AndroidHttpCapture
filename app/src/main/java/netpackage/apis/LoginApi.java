@@ -61,18 +61,8 @@ public class LoginApi {
 
     }
 
-    public static void requestToutiao() {
-        Request req = CommonRequest.createGetRequest("http://www.toutiao.com/a6361599161015468545/", null);
-        CommonOkhttpClient.get(req, new DisposeDataHandle(new DisposeDataListener() {
-            @Override
-            public void onSuccess(Object reponseObj) {
-
-            }
-
-            @Override
-            public void onFailed(Object reasonObj) {
-
-            }
-        }));
+    public static void requestToutiao(String url,DisposeDataListener listener) {
+        Request req = CommonRequest.createGetRequest(url, null);
+        CommonOkhttpClient.get(req, new DisposeDataHandle(listener));
     }
 }

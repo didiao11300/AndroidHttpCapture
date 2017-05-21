@@ -5,7 +5,7 @@ package netpackage;
 
 import java.io.IOException;
 
-import org.json.JSONObject;
+import com.alibaba.fastjson.JSON;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -74,35 +74,41 @@ public class CommonJsonCallback implements Callback {
             return;
         }
 
-        // FIXME: 2016/10/31 tory 这里 需要处理,用fastjson强转
-        try {
-            Log.i(TAG, "handleResponse()..." + resutl);
-            JSONObject retJson = new JSONObject(resutl);
-            if (retJson.has(RESULT)) {
-                String data = retJson.optString(RESULT);
-                if (retJson.optInt(RESULT_CODE) == REQUEST_OK) {
-                    //                            if (null == mClass) {
-                    //                                mListener.onFailed(retJson);
-                    //                            } else {
-                    //                                Object obj = null;
-                    //                                if (null == obj) {
-                    //                                    mListener.onFailed(obj);
-                    //                                } else {
-                    //                                    //按照classz解析json开始解析json fastjson 或则其他
-                    //                                    //                            JSONObject jb = new
-                    // JSONObject(retJson,);
-                    //
-                    //                                    mListener.onSuccess(null);
-                    //                                }
-                    //                            }
-                    mListener.onSuccess(retJson.opt("data"));
-                } else {
-                    mListener.onFailed(new OkHttpException(JSON_ERROR, -1));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            mListener.onFailed(new OkHttpException(JSON_ERROR, -2));
+        //直接返回数据,不用json处理
+        if (null == mClass) {
+            mListener.onSuccess(resutl);
+            return;
         }
+        mListener.onSuccess(JSON.parseObject(resutl, mClass));
+        //        // FIXME: 2016/10/31 tory 这里 需要处理,用fastjson强转
+        //        try {
+        //            Log.i(TAG, "handleResponse()..." + resutl);
+        //            JSONObject retJson = new JSONObject(resutl);
+        //            if (retJson.has(RESULT)) {
+        //                String data = retJson.optString(RESULT);
+        //                if (retJson.optInt(RESULT_CODE) == REQUEST_OK) {
+        //                    //                            if (null == mClass) {
+        //                    //                                mListener.onFailed(retJson);
+        //                    //                            } else {
+        //                    //                                Object obj = null;
+        //                    //                                if (null == obj) {
+        //                    //                                    mListener.onFailed(obj);
+        //                    //                                } else {
+        //                    //                                    //按照classz解析json开始解析json fastjson 或则其他
+        //                    //                                    //                            JSONObject jb = new
+        //                    // JSONObject(retJson,);
+        //                    //
+        //                    //                                    mListener.onSuccess(null);
+        //                    //                                }
+        //                    //                            }
+        //                    mListener.onSuccess(retJson.opt("data"));
+        //                } else {
+        //                    mListener.onFailed(new OkHttpException(JSON_ERROR, -1));
+        //                }
+        //            }
+        //        } catch (Exception e) {
+        //            e.printStackTrace();
+        //            mListener.onFailed(new OkHttpException(JSON_ERROR, -2));
+        //        }
     }
 }

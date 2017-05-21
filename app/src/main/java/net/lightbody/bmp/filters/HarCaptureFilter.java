@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import android.util.Log;
 import capture.VideoInfoRsp;
 import capture.VideoItemListRsp;
+import capture.VideoItemRsp;
 import cn.darkal.networkdiagnosis.Utils.DatatypeConverter;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -51,6 +52,7 @@ import net.lightbody.bmp.filters.support.HttpConnectTiming;
 import net.lightbody.bmp.filters.util.HarCaptureUtil;
 import net.lightbody.bmp.proxy.CaptureType;
 import net.lightbody.bmp.util.BrowserMobHttpUtil;
+import netpackage.apis.LoginApi;
 
 public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
     private static final Logger log = LoggerFactory.getLogger(HarCaptureFilter.class);
@@ -274,7 +276,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         // if a Ser
         //verResponseCaptureFilter is configured, delegate to it to collect the server's response. if it is not
         // configured, we still need to capture basic information (timings, HTTP status, etc.), just not content.
-//        Log.i(TAG, TAG + "#serverToProxyResponse()..." + httpObject.getClass().getSimpleName());
+        //        Log.i(TAG, TAG + "#serverToProxyResponse()..." + httpObject.getClass().getSimpleName());
         if (responseCaptureFilter != null) {
             responseCaptureFilter.serverToProxyResponse(httpObject);
         }
@@ -313,13 +315,22 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
                     //备选方案二解析html
                     //                    LoginApi.requestToutiao();
                 }
-//            } else if (reqUrl.contains("snssdk")) {
+                //            } else if (reqUrl.contains("snssdk")) {
             } else if (reqUrl.contains("api/news/feed/v53/")) {
-//                printEntry(TAG + "#VideoListRsp", harEntry);
+                //                printEntry(TAG + "#VideoListRsp", harEntry);
                 if (null != rsp.getContent() && rsp.getContent().getText() != null
                         && rsp.getContent().getText().length() > 0) {
                     VideoItemListRsp videosRsp = JSON.parseObject(rsp.getContent().getText(), VideoItemListRsp.class);
-                    Log.i(TAG, "VideoInfoList--->:" + videosRsp.toJsonString());
+                    //                    Log.i(TAG, "VideoInfoList--->:" + videosRsp.toJsonString());
+                    if (null != videosRsp && null != videosRsp.data) {
+                        for (VideoItemListRsp.DataBean item : videosRsp.data) {
+                            if (null != item.content) {
+                                VideoItemRsp subItem = JSON.parseObject(item.content, VideoItemRsp.class);
+                                Log.i(TAG, "VideoInfo:" + subItem.toJsonString());
+                                LoginApi.requestToutiao();
+                            }
+                        }
+                    }
                 }
 
             }

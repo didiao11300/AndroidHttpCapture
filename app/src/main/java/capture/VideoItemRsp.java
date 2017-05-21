@@ -5,6 +5,7 @@ package capture;
 
 import java.util.List;
 
+import com.alibaba.fastjson.JSON;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -235,5 +236,10 @@ public class VideoItemRsp {
         public static class UrlListBean {
             public String url;
         }
+    }
+
+    public String toJsonString(){
+        String s = JSON.toJSONString(this);
+        return s;
     }
 }

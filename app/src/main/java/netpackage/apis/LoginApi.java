@@ -7,6 +7,7 @@ import netpackage.CommonOkhttpClient;
 import netpackage.CommonRequest;
 import netpackage.DisposeDataHandle;
 import netpackage.DisposeDataListener;
+import netpackage.RequestParams;
 import okhttp3.Request;
 
 /**
@@ -61,8 +62,8 @@ public class LoginApi {
 
     }
 
-    public static void requestToutiao(String url,DisposeDataListener listener) {
-        Request req = CommonRequest.createGetRequest(url, null);
+    public static void requestToutiao(String url, RequestParams params, DisposeDataListener listener) {
+        Request req = CommonRequest.createGetRequest(url, params);
         CommonOkhttpClient.get(req, new DisposeDataHandle(listener));
     }
 }

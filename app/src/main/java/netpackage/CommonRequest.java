@@ -22,8 +22,9 @@ public class CommonRequest {
     private static final MediaType FILE_TYPE = MediaType.parse("application/octet-stream");
 
     public static Request createGetRequest(String url, RequestParams params) {
-        StringBuilder urlBuilder = new StringBuilder(url).append("?");
+        StringBuilder urlBuilder = new StringBuilder(url);
         if (null != params) {
+            urlBuilder.append("?");
             for (Map.Entry<String, String> entry : params.urlParams.entrySet()) {
                 urlBuilder.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
             }
@@ -32,7 +33,7 @@ public class CommonRequest {
         if (new_url.endsWith("&")) {
             new_url = urlBuilder.substring(0, urlBuilder.length() - 1);
         }
-        Log.i("tory","createGetRequest()...new_url:"+new_url);
+        Log.i("tory", "createGetRequest()...new_url:" + new_url);
         return new Request.Builder().url(new_url).get().build();
     }
 

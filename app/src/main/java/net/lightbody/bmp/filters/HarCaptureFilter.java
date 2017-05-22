@@ -2,8 +2,11 @@ package net.lightbody.bmp.filters;
 
 import static net.lightbody.bmp.util.BrowserMobHttpUtil.printEntry;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,7 +16,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.zip.CRC32;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.littleshoot.proxy.impl.ProxyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +30,8 @@ import com.google.common.collect.ImmutableList;
 
 import android.util.Log;
 import capture.VideoInfoRsp;
+import capture.VideoItem;
 import capture.VideoItemListRsp;
-import capture.VideoItemRsp;
 import cn.darkal.networkdiagnosis.Utils.DatatypeConverter;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -52,6 +59,7 @@ import net.lightbody.bmp.filters.support.HttpConnectTiming;
 import net.lightbody.bmp.filters.util.HarCaptureUtil;
 import net.lightbody.bmp.proxy.CaptureType;
 import net.lightbody.bmp.util.BrowserMobHttpUtil;
+import netpackage.DisposeDataListener;
 import netpackage.apis.LoginApi;
 
 public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
@@ -304,7 +312,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
 
         //tory add 解析代码
         if (null != harEntry && null != harEntry.getRequest()) {
-            String reqUrl = harEntry.getRequest().getUrl();
+            final String reqUrl = harEntry.getRequest().getUrl();
             HarResponse rsp = harEntry.getResponse();
             if (reqUrl.contains("a3.pstatp.com")) {
                 printEntry(TAG + "#VideoRsp", harEntry);
@@ -325,9 +333,13 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
                     if (null != videosRsp && null != videosRsp.data) {
                         for (VideoItemListRsp.DataBean item : videosRsp.data) {
                             if (null != item.content) {
-                                VideoItemRsp subItem = JSON.parseObject(item.content, VideoItemRsp.class);
+                                VideoItem subItem = JSON.parseObject(item.content, VideoItem.class);
                                 Log.i(TAG, "VideoInfo:" + subItem.toJsonString());
-                                LoginApi.requestToutiao();
+                                //方案一使用okhttp走api类似的请求
+                                //connectVideoHtmlApi(subItem);
+                                //#else if
+                                //方案二使用Jsoup框架来解析html请求
+                                connectVideoHtmlJsoup(subItem);
                             }
                         }
                     }
@@ -335,8 +347,78 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
 
             }
         }
-
         return super.serverToProxyResponse(httpObject);
+    }
+
+    public void connectVideoHtmlApi(VideoItem videoItem) {
+        if (null == videoItem) {
+            Log.e(TAG, "connectVideo()...param is null");
+            return;
+        }
+        LoginApi.requestToutiao(videoItem.share_url, new DisposeDataListener() {
+            @Override
+            public void onSuccess(Object reponseObj) {
+                //分析网页
+                Log.i(TAG, "onSuccess()..." + reponseObj.toString());
+            }
+
+            @Override
+            public void onFailed(Object reasonObj) {
+                Log.e(TAG, "onFailed()..." + reasonObj.toString());
+            }
+        });
+    }
+
+    public void connectVideoHtmlJsoup(VideoItem videoItem) {
+        if (null == videoItem) {
+            Log.e(TAG, "connectVideoHtml()...param is null");
+            return;
+        }
+        try {
+            Document doc = Jsoup.connect(videoItem.url).get();
+            Elements url = doc.select("div.video-js").select("video");
+            Log.i(TAG, "connectVideoHtmlJsoup()...url:" + url.get(0).attr("src"));
+            createCrc32(videoItem.video_id);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String createCrc32(String videoId) {
+        String random = Math.random() + "";
+        if (random.length() > 3) {
+            random = random.substring(2);
+            Log.i(TAG, "createCrc32()...random:" + random);
+        } else {
+            Log.e(TAG, "createCrc32()...not has a random");
+            return null;
+        }
+        String videoJsonUrl = null;
+        try {
+            URL url = new URL("http://i.snssdk.com/video/urls/v/1/toutiao/mp4/" + videoId);
+            String path = url.getPath();
+            String crc_path = path + "?r=" + random;
+            Log.i(TAG, "createCrc32()...crc_path:" + crc_path);
+            CRC32 crc32 = new CRC32();
+            crc32.update(crc_path.getBytes());
+            //            String crc = Long.toHexString(crc32.getValue()).toUpperCase();
+            String crc = Long.toHexString(right_shift(crc32.getValue(), 0));
+            Log.i(TAG, "createCrc32()...crc:" + crc);
+            videoJsonUrl = path + "?r=" + random + "&s=" + crc;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return videoJsonUrl;
+    }
+
+    private long right_shift(long val, int n) {
+        if (val >= 0) {
+            return val >> n;
+        } else {
+            return (val + 0x100000000l) >> n;
+        }
     }
 
     @Override

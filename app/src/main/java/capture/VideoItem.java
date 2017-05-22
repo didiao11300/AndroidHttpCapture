@@ -12,7 +12,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by youfeimacpro on 2017/5/18.
  */
 
-public class VideoItemRsp {
+public class VideoItem {
     public LogPbBean log_pb;
     /**
      * 视频文章已读数量，没看完

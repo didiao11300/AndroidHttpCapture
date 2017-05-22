@@ -64,6 +64,8 @@ android {
 }
 
 dependencies {
+    //解析html包
+    compile 'org.jsoup:jsoup:1.10.2'
     compile 'com.alibaba:fastjson:1.2.28'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'

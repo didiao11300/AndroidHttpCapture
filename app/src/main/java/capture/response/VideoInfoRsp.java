@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2017 Baidu, Inc. All Rights Reserved.
  */
-package capture;
+package capture.response;
 
 import java.util.List;
 

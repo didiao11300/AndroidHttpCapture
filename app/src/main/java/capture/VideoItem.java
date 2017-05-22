@@ -29,9 +29,15 @@ public class VideoItem {
     public VideoDetailInfoBean video_detail_info;
     public boolean has_video;
     public int article_type;
+    /**
+     * 视频属性 video_funny
+     */
     public String tag;
     public ForwardInfoBean forward_info;
     public int has_m3u8_video;
+    /**
+     * 视频关键字 "祛斑,生姜,大妈"
+     */
     public String keywords;
     /**
      * 视频持续时间秒
@@ -44,6 +50,9 @@ public class VideoItem {
     public int article_sub_type;
     public int group_flags;
     public int bury_count;
+    /**
+     * 视频标题
+     */
     public String title;
     public int ignore_web_transform;
     public int source_icon_style;
@@ -121,6 +130,9 @@ public class VideoItem {
      * 视频滤波器,重要:系统关于视频的评价,比如重复推荐，视频质量差;
      */
     public List<FilterWordsBean> filter_words;
+    /**
+     * 视频搜索关键字
+     */
     public List<String> search_labels;
     public List<ActionListBean> action_list;
     public List<LargeImageListBean> large_image_list;
@@ -238,7 +250,7 @@ public class VideoItem {
         }
     }
 
-    public String toJsonString(){
+    public String toJsonString() {
         String s = JSON.toJSONString(this);
         return s;
     }

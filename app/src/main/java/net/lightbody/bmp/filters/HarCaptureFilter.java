@@ -25,10 +25,11 @@ import com.google.common.collect.ImmutableList;
 
 import android.text.TextUtils;
 import android.util.Log;
-import capture.VideoInfoRsp;
 import capture.VideoItem;
-import capture.VideoItemListRsp;
-import capture.VideoJsonRsp;
+import capture.request.MyVideoInfoReq;
+import capture.response.VideoInfoRsp;
+import capture.response.VideoItemListRsp;
+import capture.response.VideoJsonRsp;
 import cn.darkal.networkdiagnosis.Utils.DatatypeConverter;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -59,7 +60,6 @@ import net.lightbody.bmp.filters.util.HarCaptureUtil;
 import net.lightbody.bmp.proxy.CaptureType;
 import net.lightbody.bmp.util.BrowserMobHttpUtil;
 import netpackage.DisposeDataListener;
-import netpackage.apis.LoginApi;
 import netpackage.apis.TouTiaoApis;
 
 public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
@@ -435,6 +435,41 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         } else {
             return (val + 0x100000000l) >> n;
         }
+    }
+
+    private MyVideoInfoReq convertVideoItemToMyVideoInfo(VideoItem item, String downloadurl) {
+        MyVideoInfoReq videoInfoReq = null;
+        if (null != item && !TextUtils.isEmpty(downloadurl)) {
+            videoInfoReq = new MyVideoInfoReq();
+            videoInfoReq.article_url = item.article_url;
+            videoInfoReq.behot_time = item.behot_time;
+            videoInfoReq.comment_count = item.comment_count;
+            videoInfoReq.digg_count = item.digg_count;
+            videoInfoReq.filter_words = item.filter_words;
+            videoInfoReq.keywords = item.keywords;
+            videoInfoReq.level = item.level;
+            videoInfoReq.like_count = item.like_count;
+            videoInfoReq.publish_time = item.publish_time;
+            videoInfoReq.read_count = item.read_count;
+            videoInfoReq.repin_count = item.repin_count;
+            videoInfoReq.search_labels = item.search_labels;
+            videoInfoReq.tag = item.tag;
+            videoInfoReq.title = item.title;
+            videoInfoReq.share_count = item.share_count;
+            videoInfoReq.video_duration = item.video_duration;
+            videoInfoReq.video_id = item.video_id;
+            if (null != item.user_info) {
+                videoInfoReq.description = item.user_info.description;
+                videoInfoReq.name = item.user_info.name;
+                videoInfoReq.user_id = item.user_info.user_id;
+                videoInfoReq.avatar_url = item.user_info.avatar_url;
+            }
+            if (null != item.video_detail_info) {
+                videoInfoReq.video_watch_count = item.video_detail_info.video_watch_count;
+            }
+            videoInfoReq.downloadUrl = downloadurl;
+        }
+        return videoInfoReq;
     }
 
     @Override

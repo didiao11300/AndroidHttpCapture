@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2017 Baidu, Inc. All Rights Reserved.
  */
-package capture;
+package capture.response;
 
 /**
  * Created by youfeimacpro on 2017/5/22.

@@ -8,12 +8,13 @@ import java.util.List;
 import com.alibaba.fastjson.JSON;
 
 import capture.VideoItem;
+import capture.request.base.BaseReqBody;
 
 /**
  * Created by youfeimacpro on 2017/5/22.
  */
 
-public class MyVideoInfoReq {
+public class MyVideoInfoReq extends BaseReqBody {
     /**
      * 视频文章已读数量，没看完
      */
@@ -110,8 +111,8 @@ public class MyVideoInfoReq {
      */
     public String downloadUrl;
 
-    public String toJsonString() {
-        String s = JSON.toJSONString(this);
-        return s;
-    }
+//    public String toJsonString() {
+//        String s = JSON.toJSONString(this);
+//        return s;
+//    }
 }

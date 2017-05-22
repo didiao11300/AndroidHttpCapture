@@ -48,6 +48,12 @@ public class CommonRequest {
         return new Request.Builder().url(url).post(body).build();
     }
 
+    public static Request createPostJsonRequest(String url, String jsonParam) {
+        MediaType contentType = MediaType.parse("application/json; charset=utf-8");
+        RequestBody body = RequestBody.create(contentType, jsonParam);
+        return new Request.Builder().url(url).post(body).build();
+    }
+
     public static Request createMultiPostRequest(String url, RequestParams params) {
         MultipartBody.Builder builder = new MultipartBody.Builder();
         //设置表单提交

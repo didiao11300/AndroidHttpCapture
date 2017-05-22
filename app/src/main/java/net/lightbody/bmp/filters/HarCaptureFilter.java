@@ -354,7 +354,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         return super.serverToProxyResponse(httpObject);
     }
 
-    public void connectVideoJson(VideoItem videoItem) {
+    public void connectVideoJson(final VideoItem videoItem) {
         if (null == videoItem) {
             Log.e(TAG, "connectVideoJson()...param is null");
             return;
@@ -369,7 +369,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
                         Log.i(TAG, "connectVideoJson#onSuccess()..." + reponseObj.toString());
                         VideoJsonRsp vjr = JSON.parseObject(reponseObj.toString(), VideoJsonRsp.class);
                         try {
-                            if (null != vjr && null != vjr.data.video_list
+                            if (null != vjr && null != vjr.data && null != vjr.data.video_list
                                     && null != vjr.data.video_list.video_1) {
                                 String base64 = vjr.data.video_list.video_1.main_url;
                                 ByteBuf bbin = Unpooled.buffer();
@@ -379,6 +379,9 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
                                 bbout.readBytes(bout);
                                 String downloadVideoUrl = new String(bout, "UTF-8");
                                 Log.i(TAG, "downloadUrl:" + downloadVideoUrl);
+                                MyVideoInfoReq videoInfoReq =
+                                        convertVideoItemToMyVideoInfo(videoItem, downloadVideoUrl);
+                                postMyVideoInfoToMyServer(videoInfoReq);
                             }
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
@@ -396,6 +399,24 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
                 }
             });
         }
+    }
+
+    private void postMyVideoInfoToMyServer(MyVideoInfoReq req) {
+        if (null == req) {
+            Log.e(TAG, "postMyVideoInfoToMyServer()...req is null");
+            return;
+        }
+        TouTiaoApis.sendVideoItemInfoToMyServer(req, new DisposeDataListener() {
+            @Override
+            public void onSuccess(Object reponseObj) {
+                Log.e(TAG, "postMyVideoInfoToMyServer()#onSuccess..." + reponseObj.toString());
+            }
+
+            @Override
+            public void onFailed(Object reasonObj) {
+                Log.e(TAG, "postMyVideoInfoToMyServer()#onFailed..." + reasonObj.toString());
+            }
+        });
     }
 
     private String createCrc32AndVideoJsonUrl(String host, String videoId) {

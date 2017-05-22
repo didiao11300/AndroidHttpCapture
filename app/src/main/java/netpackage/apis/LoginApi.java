@@ -61,9 +61,4 @@ public class LoginApi {
     public void register(String user, String passwd, DisposeDataListener listener) {
 
     }
-
-    public static void requestToutiao(String url, RequestParams params, DisposeDataListener listener) {
-        Request req = CommonRequest.createGetRequest(url, params);
-        CommonOkhttpClient.get(req, new DisposeDataHandle(listener));
-    }
 }

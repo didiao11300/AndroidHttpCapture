@@ -60,6 +60,7 @@ import net.lightbody.bmp.proxy.CaptureType;
 import net.lightbody.bmp.util.BrowserMobHttpUtil;
 import netpackage.DisposeDataListener;
 import netpackage.apis.LoginApi;
+import netpackage.apis.TouTiaoApis;
 
 public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
     private static final Logger log = LoggerFactory.getLogger(HarCaptureFilter.class);
@@ -360,7 +361,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         }
         String videoJsonUrl = createCrc32AndVideoJsonUrl("http://i.snssdk.com", videoItem.video_id);
         if (!TextUtils.isEmpty(videoJsonUrl)) {
-            LoginApi.requestToutiao(videoJsonUrl, null, new DisposeDataListener() {
+            TouTiaoApis.requestToutiaoVideoJson(videoJsonUrl, null, new DisposeDataListener() {
                 @Override
                 public void onSuccess(Object reponseObj) {
                     //分析网页

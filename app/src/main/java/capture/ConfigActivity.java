@@ -16,12 +16,13 @@ import cn.darkal.networkdiagnosis.R;
 
 /**
  * Created by youfeimacpro on 2017/5/24.
+ * 爬虫配置页面
  */
 
-public class SetServerActivity extends Activity implements View.OnClickListener {
+public class ConfigActivity extends Activity implements View.OnClickListener {
     private EditText mEdittextServer;
     private EditText mEdittextPort;
-    public final static String TAG = SetServerActivity.class.getSimpleName();
+    public final static String TAG = ConfigActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

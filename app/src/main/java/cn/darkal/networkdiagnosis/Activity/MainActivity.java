@@ -60,7 +60,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import capture.SetServerActivity;
+import capture.ConfigActivity;
 import cn.darkal.networkdiagnosis.Adapter.FilterAdpter;
 import cn.darkal.networkdiagnosis.Bean.PageBean;
 import cn.darkal.networkdiagnosis.Fragment.BackHandledInterface;
@@ -387,7 +387,7 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
                     } else if (id == R.id.nav_page) {
                         createPage();
                     } else if (id == R.id.nav_setserver) {
-                        Intent intent = new Intent(MainActivity.this, SetServerActivity.class);
+                        Intent intent = new Intent(MainActivity.this, ConfigActivity.class);
                         startActivity(intent);
                     }
 

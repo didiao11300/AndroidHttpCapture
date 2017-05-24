@@ -409,7 +409,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         TouTiaoApis.sendVideoItemInfoToMyServer(req, new DisposeDataListener() {
             @Override
             public void onSuccess(Object reponseObj) {
-                Log.e(TAG, "postMyVideoInfoToMyServer()#onSuccess..." + reponseObj.toString());
+                Log.i(TAG, "postMyVideoInfoToMyServer()#onSuccess..." + reponseObj.toString());
             }
 
             @Override

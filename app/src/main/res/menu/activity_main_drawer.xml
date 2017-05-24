@@ -23,6 +23,11 @@
             android:checkable="false"
             android:icon="@drawable/ic_menu_manage"
             android:title="设置" />
+        <item
+                android:id="@+id/nav_setserver"
+                android:checkable="false"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="设置视频上传服务器" />
 
         <item
             android:checkable="true"

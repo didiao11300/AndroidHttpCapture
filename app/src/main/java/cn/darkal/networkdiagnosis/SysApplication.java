@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.crashreport.CrashReport;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Environment;
@@ -31,10 +32,12 @@ public class SysApplication extends MultiDexApplication {
     public static Boolean isInitProxy = false;
     public static int proxyPort = 8888;
     public BrowserMobProxy proxy;
+    public static Context sAppContext;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        sAppContext = getApplicationContext();
         initProxy();
         // Gradle automatically generates proper variable as below.
         UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;

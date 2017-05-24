@@ -3,6 +3,7 @@
  */
 package netpackage.apis;
 
+import capture.ConfigServer;
 import capture.request.MyVideoInfoReq;
 import netpackage.CommonOkhttpClient;
 import netpackage.CommonRequest;
@@ -16,8 +17,6 @@ import okhttp3.Request;
  */
 
 public class TouTiaoApis {
-    //用你自己的服务器替换
-    public static final String HOST = "http://192.168.1.102:8080";
 
     public static void requestToutiaoVideoJson(String url, RequestParams params, DisposeDataListener listener) {
         Request req = CommonRequest.createGetRequest(url, params);
@@ -25,8 +24,13 @@ public class TouTiaoApis {
     }
 
     public static void sendVideoItemInfoToMyServer(MyVideoInfoReq req, DisposeDataListener listener) {
-        String url = HOST + "/VideoInfo";
+        String host = buildHost();
+        String url = host + "/VideoInfo";
         Request request = CommonRequest.createPostJsonRequest(url, req.toJsonString());
         CommonOkhttpClient.post(request, new DisposeDataHandle(listener));
+    }
+
+    private static String buildHost() {
+        return "http://" + ConfigServer.getServer() + ":" + ConfigServer.getPort();
     }
 }

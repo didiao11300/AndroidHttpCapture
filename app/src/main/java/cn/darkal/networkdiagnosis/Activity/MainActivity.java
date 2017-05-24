@@ -1,5 +1,23 @@
 package cn.darkal.networkdiagnosis.Activity;
 
+import java.io.File;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import org.json.JSONObject;
+
+import com.bumptech.glide.Glide;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
+import com.google.zxing.QrCodeScanActivity;
+import com.tencent.bugly.crashreport.CrashReport;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -40,38 +58,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
-import com.google.zxing.QrCodeScanActivity;
-import com.tencent.bugly.crashreport.CrashReport;
-
-import net.gotev.uploadservice.ServerResponse;
-import net.gotev.uploadservice.UploadInfo;
-import net.gotev.uploadservice.UploadStatusDelegate;
-import net.lightbody.bmp.BrowserMobProxy;
-import net.lightbody.bmp.core.har.Har;
-import net.lightbody.bmp.core.har.HarPage;
-
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import capture.SetServerActivity;
 import cn.darkal.networkdiagnosis.Adapter.FilterAdpter;
 import cn.darkal.networkdiagnosis.Bean.PageBean;
-import cn.darkal.networkdiagnosis.Fragment.BaseFragment;
 import cn.darkal.networkdiagnosis.Fragment.BackHandledInterface;
+import cn.darkal.networkdiagnosis.Fragment.BaseFragment;
 import cn.darkal.networkdiagnosis.Fragment.NetworkFragment;
 import cn.darkal.networkdiagnosis.Fragment.PreviewFragment;
 import cn.darkal.networkdiagnosis.Fragment.WebViewFragment;
@@ -82,6 +75,12 @@ import cn.darkal.networkdiagnosis.Utils.FileUtils;
 import cn.darkal.networkdiagnosis.Utils.SharedPreferenceUtils;
 import cn.darkal.networkdiagnosis.Utils.ZipUtils;
 import cn.darkal.networkdiagnosis.View.LoadingDialog;
+import net.gotev.uploadservice.ServerResponse;
+import net.gotev.uploadservice.UploadInfo;
+import net.gotev.uploadservice.UploadStatusDelegate;
+import net.lightbody.bmp.BrowserMobProxy;
+import net.lightbody.bmp.core.har.Har;
+import net.lightbody.bmp.core.har.HarPage;
 
 /**
  * Created by xuzhou on 2016/8/10.
@@ -126,8 +125,8 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
     @BindView(R.id.fab_clear)
     public FloatingActionButton clearFab;
 
-//    int lastX, lastY;
-//    Boolean isMove = false;
+    //    int lastX, lastY;
+    //    Boolean isMove = false;
 
     public SearchView searchView;
     public MenuItem homeItem;
@@ -149,7 +148,6 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
 
         ButterKnife.bind(this);
         initFloatingActionMenu();
-
 
         OnGlobalLayoutListener globalLayoutListener = new OnGlobalLayoutListener(rootView);
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
@@ -174,52 +172,52 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
         navigationView.setNavigationItemSelectedListener(navigationItemListener);
         navigationView.getMenu().getItem(0).setChecked(true);
 
-//        if (savedInstanceState != null && savedInstanceState.getInt("tab") != 0) {
-//            switch (savedInstanceState.getInt("tab")) {
-//                case 1:
-//                    switchContent(WebViewFragment.getInstance());
-//                    break;
-//                case 2:
-//                    switchContent(NetworkFragment.getInstance());
-//                    break;
-//                case 3:
-//                    switchContent(PreviewFragment.getInstance());
-//                    break;
-//            }
-//        }
+        //        if (savedInstanceState != null && savedInstanceState.getInt("tab") != 0) {
+        //            switch (savedInstanceState.getInt("tab")) {
+        //                case 1:
+        //                    switchContent(WebViewFragment.getInstance());
+        //                    break;
+        //                case 2:
+        //                    switchContent(NetworkFragment.getInstance());
+        //                    break;
+        //                case 3:
+        //                    switchContent(PreviewFragment.getInstance());
+        //                    break;
+        //            }
+        //        }
 
-//        fab.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View view, MotionEvent motionEvent) {
-//                //获取到手指处的横坐标和纵坐标
-//                int x = (int) motionEvent.getX();
-//                int y = (int) motionEvent.getY();
-//                switch (motionEvent.getAction()) {
-//                    case MotionEvent.ACTION_DOWN:
-//                        lastX = x;
-//                        lastY = y;
-//                        isMove = false;
-//                        break;
-//                    case MotionEvent.ACTION_MOVE:
-//                        //计算移动的距离
-//                        int offX = x - lastX;
-//                        int offY = y - lastY;
-//                        if (offX * offX + offY * offY < 400 && !isMove) {
-//                            break;
-//                        }
-//                        view.offsetLeftAndRight(offX);
-//                        view.offsetTopAndBottom(offY);
-//                        isMove = true;
-//                        break;
-//                    case MotionEvent.ACTION_UP:
-//                        if (!isMove) {
-//                            createPage();
-//                        }
-//                        break;
-//                }
-//                return true;
-//            }
-//        });
+        //        fab.setOnTouchListener(new View.OnTouchListener() {
+        //            @Override
+        //            public boolean onTouch(View view, MotionEvent motionEvent) {
+        //                //获取到手指处的横坐标和纵坐标
+        //                int x = (int) motionEvent.getX();
+        //                int y = (int) motionEvent.getY();
+        //                switch (motionEvent.getAction()) {
+        //                    case MotionEvent.ACTION_DOWN:
+        //                        lastX = x;
+        //                        lastY = y;
+        //                        isMove = false;
+        //                        break;
+        //                    case MotionEvent.ACTION_MOVE:
+        //                        //计算移动的距离
+        //                        int offX = x - lastX;
+        //                        int offY = y - lastY;
+        //                        if (offX * offX + offY * offY < 400 && !isMove) {
+        //                            break;
+        //                        }
+        //                        view.offsetLeftAndRight(offX);
+        //                        view.offsetTopAndBottom(offY);
+        //                        isMove = true;
+        //                        break;
+        //                    case MotionEvent.ACTION_UP:
+        //                        if (!isMove) {
+        //                            createPage();
+        //                        }
+        //                        break;
+        //                }
+        //                return true;
+        //            }
+        //        });
     }
 
     public void createPage() {
@@ -257,20 +255,20 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
 
-//        MenuItem pageButton = menu.findItem(R.id.action_page);
-//        pageButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//                createPage();
-//                return true;
-//            }
-//        });
+        //        MenuItem pageButton = menu.findItem(R.id.action_page);
+        //        pageButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        //            @Override
+        //            public boolean onMenuItemClick(MenuItem item) {
+        //                createPage();
+        //                return true;
+        //            }
+        //        });
 
         filterMenuItem = menu.findItem(R.id.action_filter);
         homeItem = menu.findItem(R.id.action_home);
         searchItem = menu.findItem(R.id.search);
-//        uaMenuItem = menu.findItem(R.id.ua);
-//        logMenuItem = menu.findItem(R.id.log);
+        //        uaMenuItem = menu.findItem(R.id.ua);
+        //        logMenuItem = menu.findItem(R.id.log);
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView = (SearchView) searchItem.getActionView();
@@ -329,13 +327,13 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if(id == R.id.action_home){
+        if (id == R.id.action_home) {
             WebViewFragment webViewFragment = WebViewFragment.getInstance();
             webViewFragment.loadUrl(HOME_URL);
             switchContent(webViewFragment);
             return true;
         }
-        if(id == R.id.action_guide){
+        if (id == R.id.action_guide) {
             WebViewFragment webViewFragment = WebViewFragment.getInstance();
             webViewFragment.loadUrl(GUIDE_URL);
             switchContent(webViewFragment);
@@ -355,45 +353,49 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
         return super.onOptionsItemSelected(item);
     }
 
-    public NavigationView.OnNavigationItemSelectedListener navigationItemListener = new NavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(MenuItem item) {
-            // Handle navigation view item clicks here.
-            int id = item.getItemId();
+    public NavigationView.OnNavigationItemSelectedListener navigationItemListener =
+            new NavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(MenuItem item) {
+                    // Handle navigation view item clicks here.
+                    int id = item.getItemId();
 
-            if (!SysApplication.isInitProxy) {
-                Toast.makeText(MainActivity.this, "请等待程序初始化完成", Toast.LENGTH_LONG).show();
-                return true;
-            }
-            if (id == R.id.nav_camera) {
-                Intent intent = new Intent(MainActivity.this, QrCodeScanActivity.class);
-                startActivity(intent);
-            } else if (id == R.id.nav_gallery) {
-                switchContent(WebViewFragment.getInstance());
-            }
-//            else if (id == R.id.nav_preview) {
-//                switchContent(PreviewFragment.getInstance());
-//            }
-            else if (id == R.id.nav_slideshow) {
-                switchContent(NetworkFragment.getInstance());
-            } else if (id == R.id.nav_manage) {
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
-            } else if (id == R.id.nav_ua) {
-                showUaDialog();
-            } else if (id == R.id.nav_cosole) {
-                showLogDialog();
-            } else if (id == R.id.nav_host) {
-                showHostDialog();
-            } else if (id == R.id.nav_page) {
-                createPage();
-            }
+                    if (!SysApplication.isInitProxy) {
+                        Toast.makeText(MainActivity.this, "请等待程序初始化完成", Toast.LENGTH_LONG).show();
+                        return true;
+                    }
+                    if (id == R.id.nav_camera) {
+                        Intent intent = new Intent(MainActivity.this, QrCodeScanActivity.class);
+                        startActivity(intent);
+                    } else if (id == R.id.nav_gallery) {
+                        switchContent(WebViewFragment.getInstance());
+                    }
+                    //            else if (id == R.id.nav_preview) {
+                    //                switchContent(PreviewFragment.getInstance());
+                    //            }
+                    else if (id == R.id.nav_slideshow) {
+                        switchContent(NetworkFragment.getInstance());
+                    } else if (id == R.id.nav_manage) {
+                        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                        startActivity(intent);
+                    } else if (id == R.id.nav_ua) {
+                        showUaDialog();
+                    } else if (id == R.id.nav_cosole) {
+                        showLogDialog();
+                    } else if (id == R.id.nav_host) {
+                        showHostDialog();
+                    } else if (id == R.id.nav_page) {
+                        createPage();
+                    } else if (id == R.id.nav_setserver) {
+                        Intent intent = new Intent(MainActivity.this, SetServerActivity.class);
+                        startActivity(intent);
+                    }
 
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
-            return true;
-        }
-    };
+                    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                    drawer.closeDrawer(GravityCompat.START);
+                    return true;
+                }
+            };
 
     /**
      * 修改显示的内容 不会重新加载
@@ -429,7 +431,7 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
             if (getSupportFragmentManager().findFragmentByTag(to.getClass().getName()) != null) {
                 getSupportFragmentManager().findFragmentByTag(to.getClass().getName()).setUserVisibleHint(true);
             }
-//            setSelectedFragment((BaseFragment) to);
+            //            setSelectedFragment((BaseFragment) to);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -466,7 +468,7 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 3) {
             if (resultCode == Activity.RESULT_OK) {
-                SharedPreferenceUtils.putBoolean(this,"isInstallCert", true);
+                SharedPreferenceUtils.putBoolean(this, "isInstallCert", true);
                 Toast.makeText(this, "安装成功", Toast.LENGTH_LONG).show();
 
             } else {
@@ -551,7 +553,7 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
             if (intent.getAction().equals("android.intent.action.SEARCH")) {
                 switchContent(PreviewFragment.getInstance());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -598,7 +600,6 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
             e.printStackTrace();
         }
     }
-
 
     public void createZip(final Runnable callback) {
         showLoading("打包中");
@@ -647,7 +648,8 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
                 intent.setType("application/octet-stream");
                 intent.putExtra(Intent.EXTRA_SUBJECT, "分享HAR文件");
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(Environment.getExternalStorageDirectory() + "/test.zip")));
+                intent.putExtra(Intent.EXTRA_STREAM,
+                        Uri.fromFile(new File(Environment.getExternalStorageDirectory() + "/test.zip")));
                 startActivity(Intent.createChooser(intent, "share"));
             }
         };
@@ -723,7 +725,7 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
         View textEntryView = inflater.inflate(R.layout.alert_code, null);
         final EditText edtInput = (EditText) textEntryView.findViewById(R.id.et_code);
         final ImageView imageView = (ImageView) textEntryView.findViewById(R.id.iv_code);
-//        final String uuid = SystemBasicInfo.getUUID(this);
+        //        final String uuid = SystemBasicInfo.getUUID(this);
 
         final String key = Math.random() + "";
         Glide.with(this).load(CODE_URL + "?key=" + key + "&scene=2&t=" + Math.random()).into(imageView);
@@ -733,7 +735,8 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
             @Override
             public void onClick(View view) {
                 edtInput.setText("");
-                Glide.with(MainActivity.this).load(CODE_URL + "?key=" + key + "&scene=2&t=" + Math.random()).into(imageView);
+                Glide.with(MainActivity.this).load(CODE_URL + "?key=" + key + "&scene=2&t=" + Math.random())
+                        .into(imageView);
             }
         });
 
@@ -748,9 +751,12 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
-                        String serverUrl = UPLOAD_URL + "?code=" + edtInput.getText() + "&os=Android&module=" + Build.MODEL.replace(" ", "") + "&key=" + key;
+                        String serverUrl =
+                                UPLOAD_URL + "?code=" + edtInput.getText() + "&os=Android&module=" + Build.MODEL
+                                        .replace(" ", "") + "&key=" + key;
                         showLoading("上传中");
-                        FileUtils.uploadFiles(MainActivity.this, new MyUploadDelegate(), serverUrl, "upload", Environment.getExternalStorageDirectory() + "/test.zip");
+                        FileUtils.uploadFiles(MainActivity.this, new MyUploadDelegate(), serverUrl, "upload",
+                                Environment.getExternalStorageDirectory() + "/test.zip");
                     }
                 };
                 createZip(runnable);
@@ -868,19 +874,19 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
         return proxy.getHar(getPageSet());
     }
 
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        int tab;
-//        if (mBackHandedFragment instanceof PreviewFragment) {
-//            tab = 3;
-//        } else if (mBackHandedFragment instanceof NetworkFragment) {
-//            tab = 2;
-//        } else {
-//            tab = 1;
-//        }
-//        outState.putInt("tab", tab);
-//        super.onSaveInstanceState(outState);
-//    }
+    //    @Override
+    //    protected void onSaveInstanceState(Bundle outState) {
+    //        int tab;
+    //        if (mBackHandedFragment instanceof PreviewFragment) {
+    //            tab = 3;
+    //        } else if (mBackHandedFragment instanceof NetworkFragment) {
+    //            tab = 2;
+    //        } else {
+    //            tab = 1;
+    //        }
+    //        outState.putInt("tab", tab);
+    //        super.onSaveInstanceState(outState);
+    //    }
 
     public void initFloatingActionMenu() {
         fam.setClosedOnTouchOutside(true);
@@ -903,10 +909,10 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
             public void onAnimationStart(Animator animation) {
                 fam.getMenuIconView().setImageResource(fam.isOpened()
                         ? R.drawable.ic_file_upload_white_24dp : R.drawable.ic_close_white_24dp);
-                if(mBackHandedFragment instanceof PreviewFragment){
-                    if(fam.isOpened()){
+                if (mBackHandedFragment instanceof PreviewFragment) {
+                    if (fam.isOpened()) {
                         clearFab.show(true);
-                    }else {
+                    } else {
                         clearFab.hide(true);
                     }
                 }
@@ -922,7 +928,7 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
         shareFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showFilter(MainActivity.this,TYPE_SHARE);
+                showFilter(MainActivity.this, TYPE_SHARE);
                 fam.close(true);
             }
         });
@@ -930,7 +936,7 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
         uploadFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showFilter(MainActivity.this,TYPE_UPLOAD);
+                showFilter(MainActivity.this, TYPE_UPLOAD);
                 fam.close(true);
             }
         });
@@ -950,7 +956,7 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
                 builder.setTitle("请确认是否清除所有请求?");
                 builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        ((SysApplication)getApplication()).proxy.getHar().getLog().clearAllEntries();
+                        ((SysApplication) getApplication()).proxy.getHar().getLog().clearAllEntries();
                         PreviewFragment.getInstance().notifyHarChange();
                     }
                 });
@@ -963,7 +969,7 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
         });
     }
 
-    private String[] uaItem = new String[]{"手机浏览器", "微信环境", "手Q环境"};
+    private String[] uaItem = new String[] {"手机浏览器", "微信环境", "手Q环境"};
 
     public void showUaDialog() {
         DialogInterface.OnClickListener buttonListener = new ButtonOnClick();
@@ -1001,7 +1007,7 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
         }
     }
 
-    public void showLogDialog(){
+    public void showLogDialog() {
         View textEntryView = LayoutInflater.from(this).inflate(R.layout.alert_textview, null);
         TextView edtInput = (TextView) textEntryView.findViewById(R.id.tv_content);
         edtInput.setText(consoleLog);
@@ -1020,7 +1026,7 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
         builder.show();
     }
 
-    public void showHostDialog(){
+    public void showHostDialog() {
         View textEntryView = LayoutInflater.from(this).inflate(R.layout.alert_edittext, null);
         final EditText editText = (EditText) textEntryView.findViewById(R.id.et_content);
 
@@ -1037,8 +1043,8 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
             public void onClick(DialogInterface dialog, int which) {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-                SharedPreferenceUtils.putString(MainActivity.this, "system_host", editText.getText()+"");
-                DeviceUtils.changeHost(((SysApplication)getApplication()).proxy,editText.getText()+"");
+                SharedPreferenceUtils.putString(MainActivity.this, "system_host", editText.getText() + "");
+                DeviceUtils.changeHost(((SysApplication) getApplication()).proxy, editText.getText() + "");
             }
         });
         builder.setNegativeButton("清空", new DialogInterface.OnClickListener() {
@@ -1047,7 +1053,7 @@ public class MainActivity extends AppCompatActivity implements BackHandledInterf
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                 SharedPreferenceUtils.putString(MainActivity.this, "system_host", "");
-                DeviceUtils.changeHost(((SysApplication)getApplication()).proxy,editText.getText()+"");
+                DeviceUtils.changeHost(((SysApplication) getApplication()).proxy, editText.getText() + "");
             }
         });
         builder.show();

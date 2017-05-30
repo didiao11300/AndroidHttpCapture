@@ -1,5 +1,7 @@
 package net.lightbody.bmp.filters;
 
+import static net.lightbody.bmp.util.BrowserMobHttpUtil.printEntry;
+
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -310,6 +312,8 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
             harEntry.getResponse().setBodySize(responseBodySize.get());
         }
 
+        Log.i(TAG, "serverToProxyResponse()...");
+//        printEntry(TAG + "RSCP:", harEntry);
         //tory add 解析代码
         if (null != harEntry && null != harEntry.getRequest()) {
             final String reqUrl = harEntry.getRequest().getUrl();
@@ -324,7 +328,10 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
                     //                    LoginApi.requestToutiao();
                 }
                 //            } else if (reqUrl.contains("snssdk")) {
-            } else if (reqUrl.contains("api/news/feed/v53/")) {
+//            } else if (reqUrl.contains("api/news/feed/v54/")) {
+//            } else if (reqUrl.contains("api/news/feed/v53/")) {
+            } else if (reqUrl.contains("api/news/feed")) {
+                // FIXME: 2017/5/30 这里是不是需要校验，接口经常变
                 //                printEntry(TAG + "#VideoListRsp", harEntry);
                 if (null != rsp.getContent() && rsp.getContent().getText() != null
                         && rsp.getContent().getText().length() > 0) {
@@ -746,6 +753,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
     protected void captureResponse(HttpResponse httpResponse) {
         HarResponse response = new HarResponse(httpResponse.getStatus().code(), httpResponse.getStatus().reasonPhrase(),
                 httpResponse.getProtocolVersion().text());
+        Log.i(TAG, "captureResponse()...");
         harEntry.setResponse(response);
 
         captureResponseHeaderSize(httpResponse);

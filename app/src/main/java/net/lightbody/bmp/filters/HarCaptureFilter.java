@@ -1,7 +1,5 @@
 package net.lightbody.bmp.filters;
 
-import static net.lightbody.bmp.util.BrowserMobHttpUtil.printEntry;
-
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -313,7 +311,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         }
 
         Log.i(TAG, "serverToProxyResponse()...");
-//        printEntry(TAG + "RSCP:", harEntry);
+        //        printEntry(TAG + "RSCP:", harEntry);
         //tory add 解析代码
         if (null != harEntry && null != harEntry.getRequest()) {
             final String reqUrl = harEntry.getRequest().getUrl();
@@ -328,8 +326,8 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
                     //                    LoginApi.requestToutiao();
                 }
                 //            } else if (reqUrl.contains("snssdk")) {
-//            } else if (reqUrl.contains("api/news/feed/v54/")) {
-//            } else if (reqUrl.contains("api/news/feed/v53/")) {
+                //            } else if (reqUrl.contains("api/news/feed/v54/")) {
+                //            } else if (reqUrl.contains("api/news/feed/v53/")) {
             } else if (reqUrl.contains("api/news/feed")) {
                 // FIXME: 2017/5/30 这里是不是需要校验，接口经常变
                 //                printEntry(TAG + "#VideoListRsp", harEntry);
@@ -379,6 +377,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
                             if (null != vjr && null != vjr.data && null != vjr.data.video_list
                                     && null != vjr.data.video_list.video_1) {
                                 String base64 = vjr.data.video_list.video_1.main_url;
+                                String vtype = vjr.data.video_list.video_1.vtype;
                                 ByteBuf bbin = Unpooled.buffer();
                                 bbin.writeBytes(base64.getBytes());
                                 ByteBuf bbout = Base64.decode(bbin);
@@ -387,7 +386,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
                                 String downloadVideoUrl = new String(bout, "UTF-8");
                                 Log.i(TAG, "downloadUrl:" + downloadVideoUrl);
                                 MyVideoInfoReq videoInfoReq =
-                                        convertVideoItemToMyVideoInfo(videoItem, downloadVideoUrl);
+                                        convertVideoItemToMyVideoInfo(videoItem, vtype, downloadVideoUrl);
                                 postMyVideoInfoToMyServer(videoInfoReq);
                             }
                         } catch (UnsupportedEncodingException e) {
@@ -465,7 +464,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
         }
     }
 
-    private MyVideoInfoReq convertVideoItemToMyVideoInfo(VideoItem item, String downloadurl) {
+    private MyVideoInfoReq convertVideoItemToMyVideoInfo(VideoItem item, String vtype, String downloadurl) {
         MyVideoInfoReq videoInfoReq = null;
         if (null != item && !TextUtils.isEmpty(downloadurl)) {
             videoInfoReq = new MyVideoInfoReq();
@@ -496,6 +495,7 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
                 videoInfoReq.video_watch_count = item.video_detail_info.video_watch_count;
             }
             videoInfoReq.downloadUrl = downloadurl;
+            videoInfoReq.vtype = vtype;
         }
         return videoInfoReq;
     }

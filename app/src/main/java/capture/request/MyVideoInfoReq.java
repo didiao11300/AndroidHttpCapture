@@ -111,6 +111,11 @@ public class MyVideoInfoReq extends BaseReqBody {
      */
     public String downloadUrl;
 
+    /**
+     * 视频类型
+     */
+    public String vtype;
+
 //    public String toJsonString() {
 //        String s = JSON.toJSONString(this);
 //        return s;

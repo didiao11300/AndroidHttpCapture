@@ -16,6 +16,7 @@
     <string name="back">返回</string>
     <string name="scan_text">将二维码放入框内，即可自动扫描</string>
     <string name="title_activity_settings">设置</string>
+    <string name="title_activity_setserver">服务器设置</string>
 
     <!-- Strings related to Settings -->
 

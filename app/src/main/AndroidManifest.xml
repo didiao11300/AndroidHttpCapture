@@ -74,6 +74,9 @@
         <activity
             android:name="cn.darkal.networkdiagnosis.Activity.SettingsActivity"
             android:label="@string/title_activity_settings" />
+        <activity
+                android:name="capture.ConfigActivity"
+                android:label="@string/title_activity_setserver" />
 
         <!-- 引用xml策略声明 -->
         <receiver
